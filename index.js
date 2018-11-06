@@ -6,7 +6,7 @@ app.use(bodyParser.json()); // Import de body-parser
 
 const mongoose = require("mongoose");
 mongoose.connect(
-  process.env.MONGODB_URI,
+  process.env.MONGODB_URI || "mongodb://localhost:27017/nom-du-projet",
   { useNewUrlParser: true }
 ); // Import de mongoose et connection à une database
 
@@ -46,9 +46,6 @@ app.post("/api/sign_up", function(req, res) {
     }
   });
 });
-app.get("/api/rassurer", function(req, res) {
-  res.json({ test: "terrible !" });
-});
 
 app.post("/api/word-wrap", function(req, res) {
   const resultText = [];
@@ -72,8 +69,11 @@ app.post("/api/word-wrap", function(req, res) {
   res.json({ wrapped: finalResult });
 });
 
-// Démarrer le serveur
-const port = process.env.PORT;
+app.get("/", function(req, res) {
+  res.send("franchement, sofiane c un bg");
+});
+// Démarrer le serveur`
+const port = process.env.PORT || 3000;
 app.listen(port, function() {
   console.log("Server started");
 });
