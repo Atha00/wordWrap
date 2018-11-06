@@ -6,7 +6,7 @@ app.use(bodyParser.json()); // Import de body-parser
 
 const mongoose = require("mongoose");
 mongoose.connect(
-  "mongodb://localhost:27017/wordWrap-API",
+  process.env.MONGODB_URI,
   { useNewUrlParser: true }
 ); // Import de mongoose et connection à une database
 
@@ -70,7 +70,7 @@ app.post("/api/word-wrap", function(req, res) {
 });
 
 // Démarrer le serveur
-const port = 3000;
+const port = process.env.PORT;
 app.listen(port, function() {
   console.log("Server started");
 });
