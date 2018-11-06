@@ -46,6 +46,9 @@ app.post("/api/sign_up", function(req, res) {
     }
   });
 });
+app.get("/api/rassurer", function(req, res) {
+  res.json({ test: "terrible !" });
+});
 
 app.post("/api/word-wrap", function(req, res) {
   const resultText = [];
