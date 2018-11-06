@@ -6,7 +6,7 @@ app.use(bodyParser.json()); // Import de body-parser
 
 const mongoose = require("mongoose");
 mongoose.connect(
-  process.env.MONGODB_URI || "mongodb://localhost:27017/nom-du-projet",
+  "mongodb://localhost:27017/wordWrap-API" || process.env.MONGODB_URI, // process.env.MONGODB_URI ||
   { useNewUrlParser: true }
 ); // Import de mongoose et connection à une database
 
@@ -48,32 +48,49 @@ app.post("/api/sign_up", function(req, res) {
 });
 
 app.post("/api/word-wrap", function(req, res) {
-  const resultText = [];
-  const textToWrap = req.body.text;
-  for (i = 0; i < textToWrap.length; i = i + 80) {
-    let enigma = textToWrap.slice(i, i + 80);
-    console.log("------------------");
-    console.log("valeur de i", i);
-    console.log("textToWrap[i + 78] ", textToWrap[i + 78]);
-    console.log('textToWrap[i + 78] === " "', textToWrap[i + 78] === " ");
-    console.log("------------------");
-    console.log(resultText);
-    console.log("-------------------");
-    if (textToWrap[i + 78] === " ") {
-      resultText.push(enigma);
+  realToken = req.headers.authorization.substring(7);
+  // console.log(realToken);
+  UserModel.findOne({ token: realToken }).exec(function(err, tokenReq) {
+    // console.log(tokenReq);
+    if (tokenReq === null) {
+      return res.status(401).json({
+        error: {
+          message: "Invalid token"
+        }
+      });
     } else {
-      resultText.push(enigma + "-");
+      const resultText = [];
+      const textToWrap = req.body.text.split("");
+      for (i = 0; i < textToWrap.length; i = i + 80) {
+        let enigma = textToWrap.slice(i, i + 80).join("");
+        // console.log("-----------------------------");
+        // console.log("i + 80 c'est celui-là : " + textToWrap[i + 80]);
+        // console.log("enigma : " + enigma);
+        // console.log("-----------------------------");
+        if (textToWrap[i + 80] === " ") {
+          resultText.push(enigma);
+        } else if (textToWrap[i + 79] === " ") {
+          resultText.push(enigma);
+        } else if (
+          textToWrap[i + 80] === undefined ||
+          textToWrap[i + 79] === undefined
+        ) {
+          resultText.push(enigma);
+        } else {
+          resultText.push(enigma + "-");
+        }
+      }
+      let finalResult = resultText.join("\n");
+      res.status(200).json({ wrapped: finalResult });
     }
-  }
-  let finalResult = resultText.join("\n");
-  res.json({ wrapped: finalResult });
+  });
 });
 
-app.get("/", function(req, res) {
-  res.send("franchement, sofiane c un bg");
-});
+// app.get("/", function(req, res) {
+//   res.send("franchement, sofiane c un bg");
+// });
 // Démarrer le serveur`
-const port = process.env.PORT || 3000;
-app.listen(port, function() {
+const port = 3000; //process.env.PORT ||
+app.listen(port || process.env.PORT, function() {
   console.log("Server started");
 });
